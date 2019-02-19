@@ -13,6 +13,11 @@ using Teach_MGT_Team.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Teach_MGT_Team.Models;
+using GraphQL;
+using Teach_MGT_Team.GraphQLActions;
+using Teach_MGT_Team.TeamAPI.GraphQL;
+using GraphQL.Types;
+using GraphiQl;
 
 namespace Teach_MGT_Team
 {
@@ -50,6 +55,18 @@ namespace Teach_MGT_Team
             // Configure same connection at MVCDbContext.OnConfiguring            
             services.AddDbContext<MVCDbContext>(options => options.UseSqlite("Data Source = MVCDb.db"));
 
+            // Configure GraphQL
+            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+            services.AddSingleton<GraphQLAppQuery>();
+
+            // GraphQL Classes
+            services.AddSingleton<TeamType>();
+            services.AddSingleton<PlayerType>();
+
+            // GraphQL Schema            
+            var sp = services.BuildServiceProvider();
+            services.AddSingleton<ISchema>(new GraphQLSchema(new FuncDependencyResolver(type => sp.GetService(type))));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +95,8 @@ namespace Teach_MGT_Team
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseGraphiQl(); // The suggestion is not to use it in production, my suggestion is to Authorize it in production so developers can still see it
         }
     }
 }
