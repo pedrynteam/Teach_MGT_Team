@@ -18,6 +18,8 @@ using Teach_MGT_Team.GraphQLActions;
 using Teach_MGT_Team.TeamAPI.GraphQL;
 using GraphQL.Types;
 using GraphiQl;
+using Teach_MGT_Team.GraphQLActions.Resources;
+using Teach_MGT_Team.TeamAPI.Transactions;
 
 namespace Teach_MGT_Team
 {
@@ -58,14 +60,28 @@ namespace Teach_MGT_Team
             // Configure GraphQL
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<GraphQLAppQuery>();
+            services.AddSingleton<GraphQLMutation>();
 
-            // GraphQL Classes
+            // GraphQL TeamAPI
             services.AddSingleton<TeamType>();
             services.AddSingleton<PlayerType>();
+            services.AddSingleton<ResultConfirmationType>();
+            services.AddSingleton<ItemKeyType>();
+
+            services.AddSingleton<TeamInputType>();
+            services.AddSingleton<PlayerInputType>();
+            services.AddSingleton<CreateTeamAndPlayers_InputType>();
+            services.AddSingleton<CreateTeamAndPlayers_OutputType>();
+            services.AddSingleton<CreateTeamAndPlayersTxn>();
+
+            services.AddSingleton<CreateTeam_InputType>();
+            services.AddSingleton<CreateTeam_OutputType>();
+            services.AddSingleton<CreateTeamTxn>();
 
             // GraphQL Schema            
             var sp = services.BuildServiceProvider();
             services.AddSingleton<ISchema>(new GraphQLSchema(new FuncDependencyResolver(type => sp.GetService(type))));
+
 
         }
 
